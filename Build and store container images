@@ -1,0 +1,222 @@
+Create an Azure container registry
+
+muyiwa@Azure:~$ az group create --name learn-deploy-acr-rg --location eastus
+
+##Output
+
+{
+  "id": "/subscriptions/d83f3218-7274-4344-9020-44061080a8df/resourceGroups/learn-deploy-acr-rg",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "learn-deploy-acr-rg",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null,
+  "type": "Microsoft.Resources/resourceGroups"
+}
+
+Next, we'll create an Azure container registry by running the az acr create command. The container registry name must be unique within Azure and contain between 5 and 50 alphanumeric characters.
+In this example, a premium registry SKU is deployed. The premium SKU is required for geo-replication.
+To begin, we'll define an environment variable in Cloud Shell called ACR_NAME to hold the name we want to give our new container registry.
+
+muyiwa@Azure:~$ ACR_NAME=skinetics
+muyiwa@Azure:~$ az acr create --resource-group learn-deploy-acr-rg --name $ACR_NAME --sku Premium
+
+##Output
+
+{
+  "adminUserEnabled": false,
+  "anonymousPullEnabled": false,
+  "creationDate": "2021-12-21T15:14:29.535706+00:00",
+  "dataEndpointEnabled": false,
+  "dataEndpointHostNames": [],
+  "encryption": {
+    "keyVaultProperties": null,
+    "status": "disabled"
+  },
+  "id": "/subscriptions/d83f3218-7274-4344-9020-44061080a8df/resourceGroups/learn-deploy-acr-rg/providers/Microsoft.ContainerRegistry/registries/skinetics",
+  "identity": null,
+  "location": "eastus",
+  "loginServer": "skinetics.azurecr.io",
+  "name": "skinetics",
+  "networkRuleBypassOptions": "AzureServices",
+  "networkRuleSet": {
+    "defaultAction": "Allow",
+    "ipRules": [],
+    "virtualNetworkRules": []
+  },
+  "policies": {
+    "exportPolicy": {
+      "status": "enabled"
+    },
+    "quarantinePolicy": {
+      "status": "disabled"
+    },
+    "retentionPolicy": {
+      "days": 7,
+      "lastUpdatedTime": "2021-12-21T15:14:31.407512+00:00",
+      "status": "disabled"
+    },
+    "trustPolicy": {
+      "status": "disabled",
+      "type": "Notary"
+    }
+  },
+  "privateEndpointConnections": [],
+  "provisioningState": "Succeeded",
+  "publicNetworkAccess": "Enabled",
+  "resourceGroup": "learn-deploy-acr-rg",
+  "sku": {
+    "name": "Premium",
+    "tier": "Premium"
+  },
+  "status": null,
+  "systemData": {
+    "createdAt": "2021-12-21T15:14:29.535706+00:00",
+    "createdBy": "muyileeskinchy@gmail.com",
+    "createdByType": "User",
+    "lastModifiedAt": "2021-12-21T15:14:29.535706+00:00",
+    "lastModifiedBy": "muyileeskinchy@gmail.com",
+    "lastModifiedByType": "User"
+  },
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries",
+  "zoneRedundancy": "Disabled"
+}
+
+Create a container image with Azure Container Registry Tasks
+The first step is to create a new file named Dockerfile. You can use any text editor to edit the file. We'll use Cloud Shell editor for this example.
+
+
+Run the following command in Cloud Shell to open the editor.
+code
+
+##Input
+
+Bash
+
+Copy
+FROM    node:9-alpine
+ADD     https://raw.githubusercontent.com/Azure-Samples/acr-build-helloworld-node/master/package.json /
+ADD     https://raw.githubusercontent.com/Azure-Samples/acr-build-helloworld-node/master/server.js /
+RUN     npm install
+EXPOSE  80
+CMD     ["node", "server.js"]
+
+
+This configuration adds a Node.js application to the node:9-alpine image. After that, it configures the container to serve the application on port 80 via the EXPOSE instruction.
+
+
+Run the following Azure CLI command to build the container image from the Dockerfile. $ACR_NAME is the variable you defined in the preceding unit to hold your container registry name.
+
+az acr build --registry $ACR_NAME --image helloacrtasks:v1 .
+
+##Output
+
+Packing source code into tar to upload...
+Uploading archived source code from '/tmp/build_archive_7b2499392afd44f084448551701719b7.tar.gz'...
+Sending context (29.631 KiB) to registry: skinetics...
+Queued a build with ID: ca1
+Waiting for an agent...
+2021/12/21 15:35:51 Downloading source code...
+2021/12/21 15:35:52 Finished downloading source code
+2021/12/21 15:35:52 Using acb_vol_b5ac32dc-47fc-4ea2-8db0-2be7a433e4d4 as the home volume
+2021/12/21 15:35:52 Setting up Docker configuration...
+2021/12/21 15:35:53 Successfully set up Docker configuration
+2021/12/21 15:35:53 Logging in to registry: skinetics.azurecr.io
+2021/12/21 15:35:54 Successfully logged into skinetics.azurecr.io
+2021/12/21 15:35:54 Executing step ID: build. Timeout(sec): 28800, Working directory: '', Network: ''
+2021/12/21 15:35:54 Scanning for dependencies...
+2021/12/21 15:35:54 Successfully scanned dependencies
+2021/12/21 15:35:54 Launching container with name: build
+Sending build context to Docker daemon  270.3kB
+Step 1/6 : FROM    node:9-alpine
+9-alpine: Pulling from library/node
+a073c86ecf9e: Pulling fs layer
+0e28711eb56d: Pulling fs layer
+e460dd483fdd: Pulling fs layer
+a073c86ecf9e: Verifying Checksum
+a073c86ecf9e: Download complete
+e460dd483fdd: Verifying Checksum
+e460dd483fdd: Download complete
+0e28711eb56d: Verifying Checksum
+0e28711eb56d: Download complete
+a073c86ecf9e: Pull complete
+0e28711eb56d: Pull complete
+e460dd483fdd: Pull complete
+Digest: sha256:8dafc0968fb4d62834d9b826d85a8feecc69bd72cd51723c62c7db67c6dec6fa
+Status: Downloaded newer image for node:9-alpine
+ ---> a56170f59699
+Step 2/6 : ADD     https://raw.githubusercontent.com/Azure-Samples/acr-build-helloworld-node/master/package.json /
+
+ ---> cc3a04e3261b
+Step 3/6 : ADD     https://raw.githubusercontent.com/Azure-Samples/acr-build-helloworld-node/master/server.js /
+
+ ---> e006ccb0a09d
+Step 4/6 : RUN     npm install
+ ---> Running in 08506358c14c
+npm notice created a lockfile as package-lock.json. You should commit this file.
+npm WARN helloworld@1.0.0 No repository field.
+
+up to date in 0.056s
+Removing intermediate container 08506358c14c
+ ---> 40cb5a47e679
+Step 5/6 : EXPOSE  80
+ ---> Running in 933bddc98478
+Removing intermediate container 933bddc98478
+ ---> fcee0842c1bd
+Step 6/6 : CMD     ["node", "server.js"]
+ ---> Running in 4da9297d396d
+Removing intermediate container 4da9297d396d
+ ---> 2332542f2cdb
+Successfully built 2332542f2cdb
+Successfully tagged skinetics.azurecr.io/helloacrtasks:v1
+2021/12/21 15:36:02 Successfully executed container: build
+2021/12/21 15:36:02 Executing step ID: push. Timeout(sec): 3600, Working directory: '', Network: ''
+2021/12/21 15:36:02 Pushing image: skinetics.azurecr.io/helloacrtasks:v1, attempt 1
+The push refers to repository [skinetics.azurecr.io/helloacrtasks]
+2e6cf10a8e55: Preparing
+105fab5e99d4: Preparing
+51978827661c: Preparing
+172ed8ca5e43: Preparing
+8c9992f4e5dd: Preparing
+8dfad2055603: Preparing
+8dfad2055603: Waiting
+51978827661c: Pushed
+105fab5e99d4: Pushed
+2e6cf10a8e55: Pushed
+172ed8ca5e43: Pushed
+8c9992f4e5dd: Pushed
+8dfad2055603: Pushed
+v1: digest: sha256:014007c065b6d74ab52ee077bb8e84f36a50bbb6e75c209bffeab69fe1a5ee56 size: 1572
+2021/12/21 15:36:09 Successfully pushed image: skinetics.azurecr.io/helloacrtasks:v1
+2021/12/21 15:36:09 Step ID: build marked as successful (elapsed time in seconds: 8.045035)
+2021/12/21 15:36:09 Populating digests for step ID: build...
+2021/12/21 15:36:11 Successfully populated digests for step ID: build
+2021/12/21 15:36:11 Step ID: push marked as successful (elapsed time in seconds: 7.821715)
+2021/12/21 15:36:11 The following dependencies were found:
+2021/12/21 15:36:11
+- image:
+    registry: skinetics.azurecr.io
+    repository: helloacrtasks
+    tag: v1
+    digest: sha256:014007c065b6d74ab52ee077bb8e84f36a50bbb6e75c209bffeab69fe1a5ee56
+  runtime-dependency:
+    registry: registry.hub.docker.com
+    repository: library/node
+    tag: 9-alpine
+    digest: sha256:8dafc0968fb4d62834d9b826d85a8feecc69bd72cd51723c62c7db67c6dec6fa
+  git: {}
+
+Run ID: ca1 was successful after 21s
+
+Verify the Image
+
+muyiwa@Azure:~$ az acr repository list --name SKINETICS --output table
+
+##Output
+
+Result
+-------------
+helloacrtasks
