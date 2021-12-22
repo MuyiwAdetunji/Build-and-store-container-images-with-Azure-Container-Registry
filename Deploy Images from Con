@@ -79,3 +79,23 @@ muyiwa@Azure:~$ az acr credential show --name SKINETICS
   ],
   "username": "skinetics"
 }
+
+
+Deploy a container with Azure CLI
+
+muyiwa@Azure:~$ az container create     --resource-group learn-deploy-acr-rg     --name acr-tasks     --image skinetics.azurecr.io/helloacrtasks:v1     --registry-login-server skinetics.azurecr.io     --ip-address Public --location eastus --registry-username skinetics
+
+##Output
+
+Internet disconnected so it cleared ;)
+
+muyiwa@Azure:~$ az container show --resource-group  learn-deploy-acr-rg --name acr-tasks --query ipAddress.ip --output table
+
+##Output
+
+Result
+--------------
+52.249.241.194
+
+
+
