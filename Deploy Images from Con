@@ -1,0 +1,81 @@
+Enable the registry admin account
+
+muyiwa@Azure:~$ az acr update -n SKINETICS --admin-enabled true
+
+{
+  "adminUserEnabled": true,
+  "anonymousPullEnabled": false,
+  "creationDate": "2021-12-21T15:14:29.535706+00:00",
+  "dataEndpointEnabled": false,
+  "dataEndpointHostNames": [],
+  "encryption": {
+    "keyVaultProperties": null,
+    "status": "disabled"
+  },
+  "id": "/subscriptions/d83f3218-7274-4344-9020-44061080a8df/resourceGroups/learn-deploy-acr-rg/providers/Microsoft.ContainerRegistry/registries/skinetics",
+  "identity": null,
+  "location": "eastus",
+  "loginServer": "skinetics.azurecr.io",
+  "name": "skinetics",
+  "networkRuleBypassOptions": "AzureServices",
+  "networkRuleSet": {
+    "defaultAction": "Allow",
+    "ipRules": [],
+    "virtualNetworkRules": []
+  },
+  "policies": {
+    "exportPolicy": {
+      "status": "enabled"
+    },
+    "quarantinePolicy": {
+      "status": "disabled"
+    },
+    "retentionPolicy": {
+      "days": 7,
+      "lastUpdatedTime": "2021-12-22T13:59:11.125585+00:00",
+      "status": "disabled"
+    },
+    "trustPolicy": {
+      "status": "disabled",
+      "type": "Notary"
+    }
+  },
+  "privateEndpointConnections": [],
+  "provisioningState": "Succeeded",
+  "publicNetworkAccess": "Enabled",
+  "resourceGroup": "learn-deploy-acr-rg",
+  "sku": {
+    "name": "Premium",
+    "tier": "Premium"
+  },
+  "status": null,
+  "systemData": {
+    "createdAt": "2021-12-21T15:14:29.535706+00:00",
+    "createdBy": "muyileeskinchy@gmail.com",
+    "createdByType": "User",
+    "lastModifiedAt": "2021-12-22T14:30:20.162814+00:00",
+    "lastModifiedBy": "muyileeskinchy@gmail.com",
+    "lastModifiedByType": "User"
+  },
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries",
+  "zoneRedundancy": "Disabled"
+}
+
+muyiwa@Azure:~$ az acr credential show --name SKINETICS
+
+##Output
+
+{
+  "passwords": [
+    {
+      "name": "password",
+      "value": "ZA23TUmdMp77M4EU6=pAXdS3MlVjnMIk"
+    },
+    {
+      "name": "password2",
+      "value": "YEW0r1+0HNIg/6S2WdYgZQ8B9Ws6GGAN"
+    }
+  ],
+  "username": "skinetics"
+}
