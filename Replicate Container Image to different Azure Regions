@@ -1,0 +1,40 @@
+muyiwa@Azure:~$ az acr replication create --registry skinetics --location japaneast
+
+##Output
+
+  "id": "/subscriptions/d83f3218-7274-4344-9020-44061080a8df/resourceGroups/learn-deploy-acr-rg/providers/Microsoft.ContainerRegistry/registries/skinetics/replications/japaneast",
+  "location": "japaneast",
+  "name": "japaneast",
+  "provisioningState": "Succeeded",
+  "regionEndpointEnabled": true,
+  "resourceGroup": "learn-deploy-acr-rg",
+  "status": {
+    "displayStatus": "Ready",
+    "message": null,
+    "timestamp": "2021-12-22T16:39:57.005679+00:00"
+  },
+  "systemData": {
+    "createdAt": "2021-12-22T16:39:25.026423+00:00",
+    "createdBy": "muyileeskinchy@gmail.com",
+    "createdByType": "User",
+    "lastModifiedAt": "2021-12-22T17:13:26.992776+00:00",
+    "lastModifiedBy": "muyileeskinchy@gmail.com",
+    "lastModifiedByType": "User"
+  },
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries/replications",
+  "zoneRedundancy": "Disabled"
+}
+
+Retrieve all container image replicas created by running the following command
+
+muyiwa@Azure:~$ az acr replication list --registry skinetics --output table
+
+##Output
+
+NAME       LOCATION    PROVISIONING STATE    STATUS
+---------  ----------  --------------------  --------
+japaneast  japaneast   Succeeded             Ready
+eastus     eastus      Succeeded             Ready
+
+
